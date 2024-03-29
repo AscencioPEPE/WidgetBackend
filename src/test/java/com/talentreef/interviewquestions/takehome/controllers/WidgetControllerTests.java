@@ -13,18 +13,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.talentreef.interviewquestions.takehome.dto.WidgetDTO;
-import com.talentreef.interviewquestions.takehome.models.Widget;
-import com.talentreef.interviewquestions.takehome.services.WidgetService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,29 +32,32 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigDecimal;
-import java.util.List;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.talentreef.interviewquestions.takehome.dto.WidgetDTO;
+import com.talentreef.interviewquestions.takehome.models.Widget;
+import com.talentreef.interviewquestions.takehome.services.WidgetService;
 
-@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
 public class WidgetControllerTests {
 
-	final private ObjectMapper objectMapper = new ObjectMapper();
+    final private ObjectMapper objectMapper = new ObjectMapper();
 
-	private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-	@Mock
-	private WidgetService widgetService;
+    @Mock
+    private WidgetService widgetService;
 
-	@InjectMocks
-	private WidgetController widgetController;
-	
+    @InjectMocks
+    private WidgetController widgetController;
+
     private ArgumentCaptor<Widget> widgetCaptor = ArgumentCaptor.forClass(Widget.class);
 
-	@Before
-	public void init() {
-		mockMvc = MockMvcBuilders.standaloneSetup(widgetController).build();
-	}
+    @BeforeEach
+    public void init() {
+        mockMvc = MockMvcBuilders.standaloneSetup(widgetController).build();
+    }
 
 	@Test
 	public void when_getAllWidgets_expect_allWidgets() throws Exception {

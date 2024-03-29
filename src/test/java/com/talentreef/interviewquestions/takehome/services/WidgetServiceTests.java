@@ -1,31 +1,28 @@
 package com.talentreef.interviewquestions.takehome.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import com.talentreef.interviewquestions.takehome.dto.WidgetDTO;
-import com.talentreef.interviewquestions.takehome.models.Widget;
-import com.talentreef.interviewquestions.takehome.respositories.WidgetRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.server.ResponseStatusException;
+import com.talentreef.interviewquestions.takehome.dto.WidgetDTO;
+import com.talentreef.interviewquestions.takehome.models.Widget;
+import com.talentreef.interviewquestions.takehome.respositories.WidgetRepository;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyString;
-
-@RunWith(SpringRunner.class)
 public class WidgetServiceTests {
 
 	@Mock
@@ -37,19 +34,28 @@ public class WidgetServiceTests {
 	@Captor
 	private ArgumentCaptor<Widget> widgetCaptor;
 
+	@BeforeEach
+	void setUp() {
+		// Initialize mocks created with the @Mock annotation before each test method
+		MockitoAnnotations.openMocks(this);
+	}
+
 	@Test
-	public void when_getAllWidgets_expect_DTOList() {
+	public void whenGetAllWidgets_expectDtoList() {
 		Widget existingWidget = new Widget();
 		existingWidget.setId(1L);
 		existingWidget.setName("existingWidget");
-		existingWidget.setDescription("existingWidget");
+		existingWidget.setDescription("A widget description");
 		existingWidget.setPrice(new BigDecimal("10.99"));
-		List<Widget> widgetList = List.of(existingWidget);
-		when(widgetRepository.findAll()).thenReturn(widgetList);
-		WidgetDTO expectedWidgetDTO = new WidgetDTO(existingWidget);
-		List<WidgetDTO> expectedWidgetDTOList = List.of(expectedWidgetDTO);
+		when(widgetRepository.findAll()).thenReturn(List.of(existingWidget));
+
 		List<WidgetDTO> actualWidgetDTOList = widgetService.getAllWidgets();
-		assertThat(actualWidgetDTOList).usingRecursiveComparison().isEqualTo(expectedWidgetDTOList);
+
+		assertThat(actualWidgetDTOList).hasSize(1);
+		WidgetDTO resultDto = actualWidgetDTOList.get(0);
+		assertThat(resultDto.getName()).isEqualTo(existingWidget.getName());
+		assertThat(resultDto.getDescription()).isEqualTo(existingWidget.getDescription());
+		assertThat(resultDto.getPrice()).isEqualTo(existingWidget.getPrice());
 	}
 
 	@Test
@@ -144,19 +150,21 @@ public class WidgetServiceTests {
 
 	@Test
 	public void when_deleteWidget_expect_widgetRepositoryDeleteCalled() {
-		String widgetName = "WidgetToDelete";
-		Widget widgetToDelete = new Widget();
-		widgetToDelete.setId(3L);
-		widgetToDelete.setName(widgetName);
-		widgetToDelete.setDescription("A widget to be deleted");
-		widgetToDelete.setPrice(new BigDecimal("15.99"));
+	    String widgetName = "WidgetToDelete";
+	    Widget widgetToDelete = new Widget();
+	    widgetToDelete.setId(3L);
+	    widgetToDelete.setName(widgetName);
+	    widgetToDelete.setDescription("A widget to be deleted");
+	    widgetToDelete.setPrice(new BigDecimal("15.99"));
 
-		when(widgetRepository.findById(widgetName)).thenReturn(Optional.of(widgetToDelete));
-		doNothing().when(widgetRepository).deleteById(widgetName);
+	    when(widgetRepository.findById(widgetName)).thenReturn(Optional.of(widgetToDelete));
 
-		widgetService.deleteWidget(widgetName);
+	    // Ensure setup is correct; the widget to delete exists
+	    assertThat(widgetService.getWidgetByName(widgetName)).isNotNull();
 
-		verify(widgetRepository).deleteById(widgetName);
+	    widgetService.deleteWidget(widgetName);
+
+	    verify(widgetRepository).deleteById(widgetName);
 	}
 
 }

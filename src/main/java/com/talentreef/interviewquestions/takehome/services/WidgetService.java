@@ -4,16 +4,12 @@ import com.talentreef.interviewquestions.takehome.dto.WidgetDTO;
 import com.talentreef.interviewquestions.takehome.models.Widget;
 import com.talentreef.interviewquestions.takehome.respositories.WidgetRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 
 @Slf4j
@@ -22,7 +18,6 @@ public class WidgetService {
 
 	private final WidgetRepository widgetRepository;
 
-	@Autowired
 	private WidgetService(WidgetRepository widgetRepository) {
 		Assert.notNull(widgetRepository, "widgetRepository must not be null");
 		this.widgetRepository = widgetRepository;
