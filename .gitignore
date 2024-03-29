@@ -18,9 +18,6 @@
 # Gradle build directory
 /build/
 
-# Spring Boot configuration file
-application.properties
-
 # IDE-specific directories (e.g., Eclipse, IntelliJ IDEA)
 /.idea
 /.vscode
